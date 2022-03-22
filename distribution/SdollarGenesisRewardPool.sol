@@ -31,7 +31,7 @@ contract SdollarGenesisRewardPool {
         bool isStarted; // if lastRewardBlock has passed
     }
 
-    IERC20 public grape;
+    IERC20 public sdollar;
     address public mim;
 
     // Info of each pool.
