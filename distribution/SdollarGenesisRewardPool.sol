@@ -7,9 +7,9 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
 
-// Note that this pool has no minter key of GRAPE (rewards).
-// Instead, the governance will call GRAPE distributeReward method and send reward to this pool at the beginning.
-contract GrapeGenesisRewardPool {
+// Note that this pool has no minter key of SDOLLAR (rewards).
+// Instead, the governance will call SDOLLAR distributeReward method and send reward to this pool at the beginning.
+contract SdollarGenesisRewardPool {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
@@ -25,9 +25,9 @@ contract GrapeGenesisRewardPool {
     // Info of each pool.
     struct PoolInfo {
         IERC20 token; // Address of LP token contract.
-        uint256 allocPoint; // How many allocation points assigned to this pool. GRAPE to distribute.
-        uint256 lastRewardTime; // Last time that GRAPE distribution occurs.
-        uint256 accGrapePerShare; // Accumulated GRAPE per share, times 1e18. See below.
+        uint256 allocPoint; // How many allocation points assigned to this pool. SDOLLAR to distribute.
+        uint256 lastRewardTime; // Last time that SDOLLAR distribution occurs.
+        uint256 accGrapePerShare; // Accumulated SDOLLAR per share, times 1e18. See below.
         bool isStarted; // if lastRewardBlock has passed
     }
 
@@ -43,10 +43,10 @@ contract GrapeGenesisRewardPool {
     // Total allocation points. Must be the sum of all allocation points in all pools.
     uint256 public totalAllocPoint = 0;
 
-    // The time when GRAPE mining starts.
+    // The time when SDOLLAR mining starts.
     uint256 public poolStartTime;
 
-    // The time when GRAPE mining ends.
+    // The time when SDOLLAR mining ends.
     uint256 public poolEndTime;
 
     // TESTNET
