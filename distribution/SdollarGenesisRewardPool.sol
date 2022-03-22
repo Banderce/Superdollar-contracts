@@ -56,7 +56,7 @@ contract SdollarGenesisRewardPool {
     // END TESTNET
 
     // MAINNET
-    //uint256 public sdollarPerSecond = 0.013885 ether; // 1200 SDOLLAR / (24h * 60min * 60s)
+    //uint256 public sdollarPerSecond = 0.01388875 ether; // 1200 SDOLLAR / (24h * 60min * 60s)
     //uint256 public runningTime = 1 days; // 1 days
     //uint256 public constant TOTAL_REWARDS = 1200 ether;
     // END MAINNET
