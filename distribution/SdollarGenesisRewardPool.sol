@@ -27,7 +27,7 @@ contract SdollarGenesisRewardPool {
         IERC20 token; // Address of LP token contract.
         uint256 allocPoint; // How many allocation points assigned to this pool. SDOLLAR to distribute.
         uint256 lastRewardTime; // Last time that SDOLLAR distribution occurs.
-        uint256 accGrapePerShare; // Accumulated SDOLLAR per share, times 1e18. See below.
+        uint256 accSdollarPerShare; // Accumulated SDOLLAR per share, times 1e18. See below.
         bool isStarted; // if lastRewardBlock has passed
     }
 
