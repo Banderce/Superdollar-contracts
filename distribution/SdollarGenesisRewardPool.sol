@@ -50,13 +50,13 @@ contract SdollarGenesisRewardPool {
     uint256 public poolEndTime;
 
     // TESTNET
-    uint256 public grapePerSecond = 0.33335 ether; // 1200 SDOLLAR / (1h * 60min * 60s)
+    uint256 public sdollarPerSecond = 0.33335 ether; // 1200 SDOLLAR / (1h * 60min * 60s)
     uint256 public runningTime = 1 hours; // 1 hours
     uint256 public constant TOTAL_REWARDS = 1200 ether;
     // END TESTNET
 
     // MAINNET
-    //uint256 public grapePerSecond = 0.013885 ether; // 1200 SDOLLAR / (24h * 60min * 60s)
+    //uint256 public sdollarPerSecond = 0.013885 ether; // 1200 SDOLLAR / (24h * 60min * 60s)
     //uint256 public runningTime = 1 days; // 1 days
     //uint256 public constant TOTAL_REWARDS = 1200 ether;
     // END MAINNET
