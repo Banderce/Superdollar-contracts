@@ -50,15 +50,15 @@ contract SdollarGenesisRewardPool {
     uint256 public poolEndTime;
 
     // TESTNET
-    uint256 public grapePerSecond = 0.66667 ether; // 2400 GRAPE / (1h * 60min * 60s)
+    uint256 public grapePerSecond = 0.33335 ether; // 1200 SDOLLAR / (1h * 60min * 60s)
     uint256 public runningTime = 1 hours; // 1 hours
-    uint256 public constant TOTAL_REWARDS = 2400 ether;
+    uint256 public constant TOTAL_REWARDS = 1200 ether;
     // END TESTNET
 
     // MAINNET
-    //uint256 public grapePerSecond = 0.02777 ether; // 2400 GRAPE / (24h * 60min * 60s)
+    //uint256 public grapePerSecond = 0.013885 ether; // 1200 SDOLLAR / (24h * 60min * 60s)
     //uint256 public runningTime = 1 days; // 1 days
-    //uint256 public constant TOTAL_REWARDS = 2400 ether;
+    //uint256 public constant TOTAL_REWARDS = 1200 ether;
     // END MAINNET
 
     event Deposit(address indexed user, uint256 indexed pid, uint256 amount);
@@ -67,12 +67,12 @@ contract SdollarGenesisRewardPool {
     event RewardPaid(address indexed user, uint256 amount);
 
     constructor(
-        address _grape,
+        address _sdollar,
         address _mim,
         uint256 _poolStartTime
     ) public {
         require(block.timestamp < _poolStartTime, "late");
-        if (_grape != address(0)) grape = IERC20(_grape);
+        if (_sdollar != address(0)) sdollar = IERC20(_sdollar);
         if (_mim != address(0)) mim = _mim;
         poolStartTime = _poolStartTime;
         poolEndTime = poolStartTime + runningTime;
@@ -80,14 +80,14 @@ contract SdollarGenesisRewardPool {
     }
 
     modifier onlyOperator() {
-        require(operator == msg.sender, "GrapeGenesisPool: caller is not the operator");
+        require(operator == msg.sender, "SdollarGenesisPool: caller is not the operator");
         _;
     }
 
     function checkPoolDuplicate(IERC20 _token) internal view {
         uint256 length = poolInfo.length;
         for (uint256 pid = 0; pid < length; ++pid) {
-            require(poolInfo[pid].token != _token, "GrapeGenesisPool: existing pool?");
+            require(poolInfo[pid].token != _token, "SdolllarGenesisPool: existing pool?");
         }
     }
 
@@ -118,13 +118,13 @@ contract SdollarGenesisRewardPool {
             }
         }
         bool _isStarted = (_lastRewardTime <= poolStartTime) || (_lastRewardTime <= block.timestamp);
-        poolInfo.push(PoolInfo({token: _token, allocPoint: _allocPoint, lastRewardTime: _lastRewardTime, accGrapePerShare: 0, isStarted: _isStarted}));
+        poolInfo.push(PoolInfo({token: _token, allocPoint: _allocPoint, lastRewardTime: _lastRewardTime, accSdollarPerShare: 0, isStarted: _isStarted}));
         if (_isStarted) {
             totalAllocPoint = totalAllocPoint.add(_allocPoint);
         }
     }
 
-    // Update the given pool's GRAPE allocation point. Can only be called by the owner.
+    // Update the given pool's SDOLLAR allocation point. Can only be called by the owner.
     function set(uint256 _pid, uint256 _allocPoint) public onlyOperator {
         massUpdatePools();
         PoolInfo storage pool = poolInfo[_pid];
@@ -139,27 +139,27 @@ contract SdollarGenesisRewardPool {
         if (_fromTime >= _toTime) return 0;
         if (_toTime >= poolEndTime) {
             if (_fromTime >= poolEndTime) return 0;
-            if (_fromTime <= poolStartTime) return poolEndTime.sub(poolStartTime).mul(grapePerSecond);
-            return poolEndTime.sub(_fromTime).mul(grapePerSecond);
+            if (_fromTime <= poolStartTime) return poolEndTime.sub(poolStartTime).mul(sdollarPerSecond);
+            return poolEndTime.sub(_fromTime).mul(sdollarPerSecond);
         } else {
             if (_toTime <= poolStartTime) return 0;
-            if (_fromTime <= poolStartTime) return _toTime.sub(poolStartTime).mul(grapePerSecond);
-            return _toTime.sub(_fromTime).mul(grapePerSecond);
+            if (_fromTime <= poolStartTime) return _toTime.sub(poolStartTime).mul(sdollarPerSecond);
+            return _toTime.sub(_fromTime).mul(sdollarPerSecond);
         }
     }
 
-    // View function to see pending GRAPE on frontend.
-    function pendingGRAPE(uint256 _pid, address _user) external view returns (uint256) {
+    // View function to see pending SDOLLAR on frontend.
+    function pendingSDOLLAR(uint256 _pid, address _user) external view returns (uint256) {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
-        uint256 accGrapePerShare = pool.accGrapePerShare;
+        uint256 accSdollarPerShare = pool.accSdollarPerShare;
         uint256 tokenSupply = pool.token.balanceOf(address(this));
         if (block.timestamp > pool.lastRewardTime && tokenSupply != 0) {
             uint256 _generatedReward = getGeneratedReward(pool.lastRewardTime, block.timestamp);
-            uint256 _grapeReward = _generatedReward.mul(pool.allocPoint).div(totalAllocPoint);
-            accGrapePerShare = accGrapePerShare.add(_grapeReward.mul(1e18).div(tokenSupply));
+            uint256 _sdollarReward = _generatedReward.mul(pool.allocPoint).div(totalAllocPoint);
+            accSdollarPerShare = accSdollarPerShare.add(_sdollarReward.mul(1e18).div(tokenSupply));
         }
-        return user.amount.mul(accGrapePerShare).div(1e18).sub(user.rewardDebt);
+        return user.amount.mul(accSdollarPerShare).div(1e18).sub(user.rewardDebt);
     }
 
     // Update reward variables for all pools. Be careful of gas spending!
@@ -187,8 +187,8 @@ contract SdollarGenesisRewardPool {
         }
         if (totalAllocPoint > 0) {
             uint256 _generatedReward = getGeneratedReward(pool.lastRewardTime, block.timestamp);
-            uint256 _grapeReward = _generatedReward.mul(pool.allocPoint).div(totalAllocPoint);
-            pool.accGrapePerShare = pool.accGrapePerShare.add(_grapeReward.mul(1e18).div(tokenSupply));
+            uint256 _sdollarReward = _generatedReward.mul(pool.allocPoint).div(totalAllocPoint);
+            pool.accSdollarPerShare = pool.accSdollarPerShare.add(_sdollarReward.mul(1e18).div(tokenSupply));
         }
         pool.lastRewardTime = block.timestamp;
     }
@@ -200,9 +200,9 @@ contract SdollarGenesisRewardPool {
         UserInfo storage user = userInfo[_pid][_sender];
         updatePool(_pid);
         if (user.amount > 0) {
-            uint256 _pending = user.amount.mul(pool.accGrapePerShare).div(1e18).sub(user.rewardDebt);
+            uint256 _pending = user.amount.mul(pool.accSdollarPerShare).div(1e18).sub(user.rewardDebt);
             if (_pending > 0) {
-                safeGrapeTransfer(_sender, _pending);
+                safeSdollarTransfer(_sender, _pending);
                 emit RewardPaid(_sender, _pending);
             }
         }
@@ -214,7 +214,7 @@ contract SdollarGenesisRewardPool {
                 user.amount = user.amount.add(_amount);
             }
         }
-        user.rewardDebt = user.amount.mul(pool.accGrapePerShare).div(1e18);
+        user.rewardDebt = user.amount.mul(pool.accSdollarPerShare).div(1e18);
         emit Deposit(_sender, _pid, _amount);
     }
 
@@ -225,16 +225,16 @@ contract SdollarGenesisRewardPool {
         UserInfo storage user = userInfo[_pid][_sender];
         require(user.amount >= _amount, "withdraw: not good");
         updatePool(_pid);
-        uint256 _pending = user.amount.mul(pool.accGrapePerShare).div(1e18).sub(user.rewardDebt);
+        uint256 _pending = user.amount.mul(pool.accSdollarPerShare).div(1e18).sub(user.rewardDebt);
         if (_pending > 0) {
-            safeGrapeTransfer(_sender, _pending);
+            safeSdollarTransfer(_sender, _pending);
             emit RewardPaid(_sender, _pending);
         }
         if (_amount > 0) {
             user.amount = user.amount.sub(_amount);
             pool.token.safeTransfer(_sender, _amount);
         }
-        user.rewardDebt = user.amount.mul(pool.accGrapePerShare).div(1e18);
+        user.rewardDebt = user.amount.mul(pool.accSdollarPerShare).div(1e18);
         emit Withdraw(_sender, _pid, _amount);
     }
 
@@ -249,14 +249,14 @@ contract SdollarGenesisRewardPool {
         emit EmergencyWithdraw(msg.sender, _pid, _amount);
     }
 
-    // Safe GRAPE transfer function, just in case a rounding error causes pool to not have enough GRAPEs.
-    function safeGrapeTransfer(address _to, uint256 _amount) internal {
-        uint256 _grapeBalance = grape.balanceOf(address(this));
-        if (_grapeBalance > 0) {
-            if (_amount > _grapeBalance) {
-                grape.safeTransfer(_to, _grapeBalance);
+    // Safe SDOLLAR transfer function, just in case a rounding error causes pool to not have enough SDOLLARs.
+    function safeSdollarTransfer(address _to, uint256 _amount) internal {
+        uint256 _sdollarBalance = sdollar.balanceOf(address(this));
+        if (_sdollarBalance > 0) {
+            if (_amount > _sdollarBalance) {
+                grape.safeTransfer(_to, _sdollarBalance);
             } else {
-                grape.safeTransfer(_to, _amount);
+                sdollar.safeTransfer(_to, _amount);
             }
         }
     }
@@ -271,8 +271,8 @@ contract SdollarGenesisRewardPool {
         address to
     ) external onlyOperator {
         if (block.timestamp < poolEndTime + 90 days) {
-            // do not allow to drain core token (GRAPE or lps) if less than 90 days after pool ends
-            require(_token != grape, "grape");
+            // do not allow to drain core token (SDOLLAR or lps) if less than 90 days after pool ends
+            require(_token != sdollar, "sdollar");
             uint256 length = poolInfo.length;
             for (uint256 pid = 0; pid < length; ++pid) {
                 PoolInfo storage pool = poolInfo[pid];
