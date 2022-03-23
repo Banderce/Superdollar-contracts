@@ -116,7 +116,7 @@ contract Treasury is ContractGuard {
     modifier checkOperator() {
         require(
             IBasisAsset(sdollar).operator() == address(this) &&
-                IBasisAsset(gbond).operator() == address(this) &&
+                IBasisAsset(sbond).operator() == address(this) &&
                 IBasisAsset(sshare).operator() == address(this) &&
                 Operator(boardroom).operator() == address(this),
             "Treasury: need more permission"
